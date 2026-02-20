@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://fit.nsu.ru/people"
+        xmlns="http://fit.nsu.ru/people"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified">
+
+    <xs:element name="people">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="person" type="PersonType" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="PersonType">
+        <xs:sequence>
+
+            <xs:element name="firstname" type="xs:string" minOccurs="0"/>
+            <xs:element name="lastname" type="xs:string" minOccurs="0"/>
+            <xs:element name="gender" type="GenderType" minOccurs="0"/>
+
+
+            <xs:element name="relations" type="RelationsType" minOccurs="0"/>
+
+        </xs:sequence>
+
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+    </xs:complexType>
+
+    <xs:simpleType name="GenderType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="male"/>
+            <xs:enumeration value="female"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="RelationsType">
+        <xs:sequence>
+
+            <xs:element name="parent" type="RefType" minOccurs="0"/>
+            <xs:element name="father" type="RefType" minOccurs="0"/>
+            <xs:element name="mother" type="RefType" minOccurs="0"/>
+
+            <xs:element name="spouse" type="RefType" minOccurs="0"/>
+            <xs:element name="husband" type="RefType" minOccurs="0"/>
+            <xs:element name="wife" type="RefType" minOccurs="0"/>
+
+            <xs:element name="child" type="RefType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="son" type="RefType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="daughter" type="RefType" minOccurs="0" maxOccurs="unbounded"/>
+
+            <xs:element name="sibling" type="RefType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="brother" type="RefType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="sister" type="RefType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RefType">
+        <xs:attribute name="ref" type="xs:IDREF" use="required"/>
+    </xs:complexType>
+
+</xs:schema>

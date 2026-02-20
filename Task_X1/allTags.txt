@@ -1,0 +1,108 @@
+Tag: <parent>
+  ATTRS: [value]
+
+Tag: <firstname>
+  ATTRS: [value]
+
+Tag: <siblings>
+  ATTRS: [val]
+
+Tag: <gender>
+  ATTRS: [value]
+
+Tag: <father>
+  ATTRS: none
+
+Tag: <husband>
+  ATTRS: [value]
+
+Tag: <mother>
+  ATTRS: none
+
+Tag: <son>
+  ATTRS: [id]
+
+Tag: <children>
+  START: 28
+  END:   28
+  ATTRS: none
+
+Tag: <surname>
+  START: 31
+  END:   31
+  ATTRS: [value]
+
+Tag: <siblings-number>
+  START: 37
+  END:   37
+  ATTRS: [value]
+
+Tag: <id>
+  START: 33
+  END:   33
+  ATTRS: [value]
+
+Tag: <sister>
+  START: 6
+  END:   6
+  ATTRS: none
+
+Tag: <wife>
+  START: 8
+  END:   8
+  ATTRS: [value]
+
+Tag: <children-number>
+  START: 33
+  END:   33
+  ATTRS: [value]
+
+Tag: <people>
+  START: 1
+  END:   1
+  ATTRS: [count]
+
+Tag: <family-name>
+  START: 4
+  END:   4
+  ATTRS: none
+
+Tag: <person>
+  START: 202
+  END:   202
+  ATTRS: [name, id]
+
+Tag: <fullname>
+  START: 16
+  END:   16
+  ATTRS: none
+
+Tag: <family>
+  START: 16
+  END:   16
+  ATTRS: none
+
+Tag: <brother>
+  START: 9
+  END:   9
+  ATTRS: none
+
+Tag: <daughter>
+  START: 15
+  END:   15
+  ATTRS: [id]
+
+Tag: <spouce>
+  START: 19
+  END:   19
+  ATTRS: [value]
+
+Tag: <first>
+  START: 16
+  END:   16
+  ATTRS: none
+
+Tag: <child>
+  START: 6
+  END:   6
+  ATTRS: none
