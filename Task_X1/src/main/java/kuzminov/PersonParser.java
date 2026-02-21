@@ -76,9 +76,9 @@ public static Map<String, Person> parse(File file) throws Exception {
                             String val = r.getAttributeValue(null, "value");
                             if (val != null && !val.equals("NONE")) {
                                 String[] newVal = val.trim().split("\\s+");
-                                if (nameHash(newVal[0], newVal[1]).equals(" Claudia")) {
-                                    System.out.println("d");
-                                }
+//                                if (nameHash(newVal[0], newVal[1]).equals(" Claudia")) {
+//                                    System.out.println("d");
+//                                }
                                 current.spouseName = nameHash(newVal[0], newVal[1]);
                             }
                         }
@@ -152,12 +152,12 @@ public static Map<String, Person> parse(File file) throws Exception {
 
                     String nameKey = nameHash(current.firstName, current.surname);
 
-                    if((nameKey != null && nameKey.equals("Lurline Trawick"))) {
-                        System.out.println("f");
-                    }
-                    if((current.id != null && current.id.equals("P405298"))) {
-                        System.out.println("f");
-                    }
+//                    if((nameKey != null && nameKey.equals("Lurline Trawick"))) {
+//                        System.out.println("f");
+//                    }
+//                    if((current.id != null && current.id.equals("P405298"))) {
+//                        System.out.println("f");
+//                    }
                     Person target = null;
 
                     if(current.id != null && nameKey != null) {
@@ -193,10 +193,6 @@ public static Map<String, Person> parse(File file) throws Exception {
                             target.union(current);
                             nameKey = nameHash(target.firstName, target.surname);
 
-//                            if((nameKey != null && nameKey.equals("Lurline Trawick"))) {
-//                                System.out.println("f");
-//                            }
-
                             if(nameKey != null) { //так получилось, что firstname и surname не встречались вметсе
                                 Person targetByName = personsByName.get(nameKey);
                                 if(targetByName != null && target.id.equals(targetByName.id)) {
@@ -223,8 +219,6 @@ public static Map<String, Person> parse(File file) throws Exception {
             }
         }
     }
-    Person target = personsById.get("P405298");
-    System.out.println("le");
     for (Person p : personsById.values()) p.validate();
 
     return personsById;
@@ -306,20 +300,13 @@ public static Map<String, Person> parse(File file) throws Exception {
                         }
                         String parentGender = personsById.get(parentId).gender;
                         if(parentGender == null) {
-//                            throw new Exception("чето с полом родителя не так");
                             writer.writeStartElement("parent");
                             writer.writeAttribute("ref", parentId);
                             writer.writeEndElement();
                         }
                         if (parentGender.equals("male")) {
-//                            writer.writeStartElement("father");
-//                            writer.writeAttribute("ref", parentId);
-//                            writer.writeEndElement();
                             writeFather.add(parentId);
                         } else if (parentGender.equals("female")) {
-//                            writer.writeStartElement("mother");
-//                            writer.writeAttribute("ref", parentId);
-//                            writer.writeEndElement();
                             writeMother.add(parentId);
                         } else {
                             throw new Exception("чето с полом родителя не так");
@@ -403,16 +390,12 @@ public static Map<String, Person> parse(File file) throws Exception {
                 }
 
                 // дети
-//                Set<String> writtenChildren = new HashSet<>();
                 // другие дети (если есть в childrenId, но не в son/daughter)
                 for (String childName : p.childrenName) {
                     if(personsByName.get(childName) == null) {
                         throw new Exception("чето с существованием ребенка не так");
                     }
                     String childId = personsByName.get(childName).id;
-//                    if (writtenChildren.contains(childId)) {
-//                        continue;
-//                    }
                     String childGender = personsByName.get(childName).gender;
                     if(childId == null)  {
                         throw new Exception("чето с ребенком не так, id");
@@ -435,13 +418,11 @@ public static Map<String, Person> parse(File file) throws Exception {
                     writer.writeStartElement("son");
                     writer.writeAttribute("ref", son);
                     writer.writeEndElement();
-//                    writtenChildren.add(son);
                 }
                 for (String daughter : p.daughterId) {
                     writer.writeStartElement("daughter");
                     writer.writeAttribute("ref", daughter);
                     writer.writeEndElement();
-//                    writtenChildren.add(daughter);
                 }
 
                 // братья / сёстры — объединяем id

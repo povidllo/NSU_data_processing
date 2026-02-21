@@ -153,12 +153,12 @@ public static Map<String, Person> parse(File file) throws Exception {
 
                     String nameKey = nameHash(current.firstName, current.surname);
 
-                    if((nameKey != null && nameKey.equals("Lurline Trawick"))) {
-                        System.out.println("f");
-                    }
-                    if((current.id != null && current.id.equals("P405298"))) {
-                        System.out.println("f");
-                    }
+//                    if((nameKey != null && nameKey.equals("Lurline Trawick"))) {
+//                        System.out.println("f");
+//                    }
+//                    if((current.id != null && current.id.equals("P405298"))) {
+//                        System.out.println("f");
+//                    }
                     Person target = null;
 
                     if(current.id != null && nameKey != null) {
@@ -194,9 +194,6 @@ public static Map<String, Person> parse(File file) throws Exception {
                             target.union(current);
                             nameKey = nameHash(target.firstName, target.surname);
 
-//                            if((nameKey != null && nameKey.equals("Lurline Trawick"))) {
-//                                System.out.println("f");
-//                            }
 
                             if(nameKey != null) { //так получилось, что firstname и surname не встречались вметсе
                                 Person targetByName = personsByName.get(nameKey);

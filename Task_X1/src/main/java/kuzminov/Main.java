@@ -12,5 +12,7 @@ public class Main {
         Map<String, kuzminov.Person> persons = PersonParser.parse(input);
 
         PersonParser.writeToFile(persons, output);
+
+        PersonParser.validateXML(new File("output.xml"), new File ("people.xsd"));
     }
 }
