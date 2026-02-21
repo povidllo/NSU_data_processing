@@ -699,9 +699,9 @@ public static Map<String, Person> parse(File file) throws Exception {
 
         try {
             m.marshal(people, xmlFile);
-            System.out.println("✔ XML валиден по XSD");
+            System.out.println("XML валиден по XSD");
         } catch (MarshalException e) {
-            System.err.println("❌ XML НЕ валиден");
+            System.err.println("XML не валиден");
             throw e;
         }
     }

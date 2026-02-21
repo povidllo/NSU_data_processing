@@ -516,7 +516,7 @@ public static Map<String, Person> parse(File file) throws Exception {
         DocumentBuilder builder = factory.newDocumentBuilder();
         builder.parse(xml);
 
-        System.out.println("XML is valid according to XSD");
+        System.out.println("XML валидный XSD");
     }
 
 
