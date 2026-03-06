@@ -1,0 +1,32 @@
+Enum Gender {
+  male
+  female
+}
+
+Enum RelationType {
+parent
+father
+mother
+spouse
+husband
+wife
+child
+son
+daughter
+sibling
+brother
+sister
+}
+
+Table Person {
+  id varchar [pk, not null]
+  firstname varchar [not null]
+  lastname varchar [not null]
+  gender Gender
+}
+
+Table Relation {
+  person_id varchar [pk, ref: > Person.id, not null]
+  relative_id varchar [pk, ref: > Person.id, not null]
+  relation_type RelationType [pk, not null]
+}
