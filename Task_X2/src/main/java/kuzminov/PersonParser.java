@@ -549,9 +549,14 @@ public static Map<String, Person> parse(File file) throws Exception {
     }
 
     public static void writeToFileWithJAXB(Map<String, Person> persons, File xmlFile, File xsdFile) throws Exception {
+
+        // вычисляем пол
+        inferGender(persons);
+
         Map<String, PersonType> ptById = new HashMap<>();
         People people = new People();
 
+        // ===== создаем PersonType =====
         for (Person p : persons.values()) {
             if (p.id == null) continue;
 
@@ -571,121 +576,146 @@ public static Map<String, Person> parse(File file) throws Exception {
         }
 
         for (Person p : persons.values()) {
-            if (p.id == null) continue;
 
+            if (p.id == null) continue;
             PersonType pt = ptById.get(p.id);
             if (pt == null) continue;
 
-            boolean hasRelations =
-                    !p.parentsId.isEmpty() ||
-                            p.fatherName != null ||
-                            p.motherName != null ||
-                            p.spouseName != null ||
-                            p.husbandId != null ||
-                            p.wifeId != null ||
-                            !p.childrenName.isEmpty() ||
-                            !p.sonId.isEmpty() ||
-                            !p.daughterId.isEmpty() ||
-                            !p.siblingsId.isEmpty() ||
-                            !p.brothersName.isEmpty() ||
-                            !p.sistersName.isEmpty();
-
-            if (!hasRelations) continue;
-
             RelationsType rel = new RelationsType();
-            pt.setRelations(rel);
+            boolean hasRelations = false;
 
-            // ===== parents / father / mother =====
             for (String pid : p.parentsId) {
-                PersonType parent = ptById.get(pid);
+
+                Person parent = persons.get(pid);
                 if (parent == null) continue;
 
                 RefType r = new RefType();
-                r.setRef(parent);
-                rel.setParent(r);
-            }
+                r.setRef(ptById.get(pid));
 
-            if (p.fatherName != null) {
-                Person f = personsByName.get(p.fatherName);
-                if (f != null && f.id != null) {
-                    RefType r = new RefType();
-                    r.setRef(ptById.get(f.id));
+                if ("male".equals(parent.gender)) {
                     rel.setFather(r);
-                }
-            }
-
-            if (p.motherName != null) {
-                Person m = personsByName.get(p.motherName);
-                if (m != null && m.id != null) {
-                    RefType r = new RefType();
-                    r.setRef(ptById.get(m.id));
+                } else if ("female".equals(parent.gender)) {
                     rel.setMother(r);
+                } else {
+                    rel.setParent(r);
                 }
+
+                hasRelations = true;
             }
 
-            // ===== spouse / husband / wife =====
             if (p.spouseName != null) {
+
                 Person s = personsByName.get(p.spouseName);
+
                 if (s != null && s.id != null) {
+
                     RefType r = new RefType();
                     r.setRef(ptById.get(s.id));
-                    rel.setSpouse(r);
+
+                    if ("male".equals(s.gender)) {
+                        rel.setHusband(r);
+                    } else if ("female".equals(s.gender)) {
+                        rel.setWife(r);
+                    } else {
+                        rel.setSpouse(r);
+                    }
+
+                    hasRelations = true;
                 }
+
             } else if (p.husbandId != null) {
+
                 RefType r = new RefType();
                 r.setRef(ptById.get(p.husbandId));
                 rel.setHusband(r);
+                hasRelations = true;
+
             } else if (p.wifeId != null) {
+
                 RefType r = new RefType();
                 r.setRef(ptById.get(p.wifeId));
                 rel.setWife(r);
+                hasRelations = true;
             }
 
-            // ===== children =====
             for (String cid : p.sonId) {
+
+                Person c = persons.get(cid);
+                if (c == null) continue;
+
                 RefType r = new RefType();
                 r.setRef(ptById.get(cid));
-                rel.getSon().add(r);
+
+                if ("male".equals(c.gender)) {
+                    rel.getSon().add(r);
+                } else if ("female".equals(c.gender)) {
+                    rel.getDaughter().add(r);
+                } else {
+                    rel.getChild().add(r);
+                }
+
+                hasRelations = true;
             }
 
             for (String cid : p.daughterId) {
+
+                Person c = persons.get(cid);
+                if (c == null) continue;
+
                 RefType r = new RefType();
                 r.setRef(ptById.get(cid));
-                rel.getDaughter().add(r);
+
+                if ("male".equals(c.gender)) {
+                    rel.getSon().add(r);
+                } else if ("female".equals(c.gender)) {
+                    rel.getDaughter().add(r);
+                } else {
+                    rel.getChild().add(r);
+                }
+
+                hasRelations = true;
             }
 
             for (String cname : p.childrenName) {
+
                 Person c = personsByName.get(cname);
-                if (c != null && c.id != null) {
-                    RefType r = new RefType();
-                    r.setRef(ptById.get(c.id));
+                if (c == null || c.id == null) continue;
+
+                RefType r = new RefType();
+                r.setRef(ptById.get(c.id));
+
+                if ("male".equals(c.gender)) {
+                    rel.getSon().add(r);
+                } else if ("female".equals(c.gender)) {
+                    rel.getDaughter().add(r);
+                } else {
                     rel.getChild().add(r);
                 }
+
+                hasRelations = true;
             }
 
-            // ===== siblings =====
             for (String sid : p.siblingsId) {
+
+                Person s = persons.get(sid);
+                if (s == null) continue;
+
                 RefType r = new RefType();
                 r.setRef(ptById.get(sid));
-                rel.getSibling().add(r);
-            }
 
-            for (String bname : p.brothersName) {
-                Person b = personsByName.get(bname);
-                if (b != null && b.id != null) {
-                    RefType r = new RefType();
-                    r.setRef(ptById.get(b.id));
+                if ("male".equals(s.gender)) {
                     rel.getBrother().add(r);
+                } else if ("female".equals(s.gender)) {
+                    rel.getSister().add(r);
+                } else {
+                    rel.getSibling().add(r);
                 }
+
+                hasRelations = true;
             }
 
-            for (String sname : p.sistersName) {
-                Person s = personsByName.get(sname);
-                if (s != null && s.id != null) {
-                    RefType r = new RefType();
-                    r.setRef(ptById.get(s.id));
-                    rel.getSister().add(r);
-                }
+            if (hasRelations) {
+                pt.setRelations(rel);
             }
         }
 
@@ -706,4 +736,65 @@ public static Map<String, Person> parse(File file) throws Exception {
         }
     }
 
+    public static void inferGender(Map<String, Person> persons) {
+        boolean changed;
+
+        do {
+            changed = false;
+
+            for (Person p : persons.values()) {
+                if (p.husbandId != null) {
+                    Person h = persons.get(p.husbandId);
+                    if (h != null && h.gender == null) {
+                        h.gender = "male";
+                        changed = true;
+                    }
+
+                    if (p.gender == null) {
+                        p.gender = "female";
+                        changed = true;
+                    }
+                }
+
+                if (p.wifeId != null) {
+                    Person w = persons.get(p.wifeId);
+
+                    if (w != null && w.gender == null) {
+                        w.gender = "female";
+                        changed = true;
+                    }
+
+                    if (p.gender == null) {
+                        p.gender = "male";
+                        changed = true;
+                    }
+                }
+
+                for (String cid : p.sonId) {
+                    Person c = persons.get(cid);
+
+                    if (c != null && c.gender == null) {
+                        c.gender = "male";
+                        changed = true;
+                    }
+                }
+
+                for (String cid : p.daughterId) {
+                    Person c = persons.get(cid);
+
+                    if (c != null && c.gender == null) {
+                        c.gender = "female";
+                        changed = true;
+                    }
+                }
+
+                for (String sid : p.siblingsId) {
+                    Person s = persons.get(sid);
+                    if (s != null && p.gender != null && s.gender == null) {
+                    }
+                }
+            }
+
+        } while (changed);
+    }
 }
