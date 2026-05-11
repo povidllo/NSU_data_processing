@@ -1,29 +1,24 @@
-SELECT bookings.now();
-
-DROP TABLE IF EXISTS flights_history CASCADE;
-
-CREATE TABLE flights_history (
-    flight_id INTEGER NOT NULL,
-    fare_conditions TEXT NOT NULL,
-    price NUMERIC(10, 2) NOT NULL,
-    ticket_count INTEGER NOT NULL DEFAULT 0,
-    PRIMARY KEY (flight_id, fare_conditions)
-);
-
-INSERT INTO flights_history (flight_id, fare_conditions, price, ticket_count)
-SELECT s.flight_id,
-    s.fare_conditions,
-    ROUND(AVG(s.price), 2) AS price,
-    COUNT(*) AS ticket_count
-FROM segments s
-    JOIN flights f ON f.flight_id = s.flight_id
-WHERE f.scheduled_departure < bookings.now()
-    OR f.status IN ('Departed', 'Arrived', 'Cancelled')
-GROUP BY s.flight_id,
-    s.fare_conditions;
-
-SELECT *
-FROM flights_history
-ORDER BY flight_id,
-    fare_conditions
-LIMIT 50;
+SELECT r.route_no,
+  f.flight_id,
+  r.duration,
+  f.scheduled_departure,
+  s.fare_conditions,
+  (
+    pr.price_per_hour * (
+      EXTRACT(
+        EPOCH
+        FROM r.duration
+      ) / 3600.0
+    )
+  ) AS restored_price,
+  s.price AS actual_price,
+  s.ticket_no
+FROM routes r
+  JOIN flights f ON f.route_no = r.route_no
+  AND r.validity @> f.scheduled_departure
+  JOIN segments s ON s.flight_id = f.flight_id
+  JOIN pricing_rules pr ON pr.route_no = r.route_no
+  AND pr.fare_conditions = s.fare_conditions
+WHERE f.status IN ('Arrived', 'Departed')
+ORDER BY r.route_no, s.fare_conditions, r.duration 
+LIMIT 10;
