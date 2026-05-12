@@ -1,0 +1,553 @@
+openapi: 3.0.3
+
+info:
+  title: Flights API (D5)
+  version: 1.0.0
+
+paths:
+
+  /cities:
+    get:
+      summary: List all available cities for flights
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+                - "Novosibirsk"
+                - "Moscow"
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+  /cities/{city}/airports:
+    get:
+      summary: List airports within a city
+
+      parameters:
+        - name: city
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "Novosibirsk"
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Airport'
+
+        '404':
+          description: City not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+  /airports:
+    get:
+      summary: List all available source and destination airports
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Airport'
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+  /airports/{airport_code}/inbound:
+    get:
+      summary: List inbound schedule for an airport
+
+      parameters:
+        - name: airport_code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "OVB"
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InboundScheduleItem'
+
+        '404':
+          description: Airport code not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+  /airports/{airportCode}/outbound:
+    get:
+      summary: List outbound schedule for an airport
+
+      parameters:
+        - name: airportCode
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "OVB"
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OutboundScheduleItem'
+
+        '404':
+          description: Airport code not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+  /routes:
+    get:
+      summary: List routes connecting two points
+
+      parameters:
+        - name: from
+          in: query
+          required: true
+          description: Source airport code or city name
+          schema:
+            type: string
+          example: "Novosibirsk"
+
+        - name: to
+          in: query
+          required: true
+          description: Destination airport code or city name
+          schema:
+            type: string
+          example: "Moscow"
+
+        - name: departureDate
+          in: query
+          required: true
+          description: Departure date
+          schema:
+            type: string
+            format: date
+          example: "2026-05-12"
+
+        - name: bookingClass
+          in: query
+          required: true
+          description: Booking class
+          schema:
+            $ref: '#/components/schemas/FareConditions'
+
+        - name: maxConnections
+          in: query
+          required: false
+          description: Maximum allowed number of connections
+          schema:
+            oneOf:
+              - type: integer
+                minimum: 0
+                maximum: 3
+              - type: string
+                enum:
+                  - unbound
+          example: 1
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RouteResult'
+
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /bookings:
+    post:
+      summary: Create a booking for a selected route for a single passenger
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingsRequestBody'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingsResponse'
+
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              
+  /check-in:
+    post:
+      summary: Online check-in for a flight
+  
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckInRequest'
+  
+      responses:
+        '200':
+          description: Successful check-in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckInResponse'
+  
+        '400':
+          description: Invalid request
+  
+        '500':
+          description: Internal server error
+
+components:
+
+  schemas:
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Internal server error"
+
+      required:
+        - error
+
+
+    Airport:
+      type: object
+      properties:
+        airport_code:
+          type: string
+          example: "OVB"
+
+        airport_name:
+          type: string
+          example: "Tolmachevo"
+
+        city:
+          type: string
+          example: "Novosibirsk"
+
+      required:
+        - airport_code
+        - airport_name
+        - city
+
+
+    Day:
+      type: string
+      enum:
+        - Mon
+        - Tue
+        - Wed
+        - Thu
+        - Fri
+        - Sat
+        - Sun
+  
+    FareConditions:
+      type: string
+      enum:
+        - Economy
+        - Comfort
+        - Business
+
+    InboundScheduleItem:
+      type: object
+      properties:
+        days_of_week:
+          type: array
+          items:
+            $ref: '#/components/schemas/Day'
+          example:
+            - Mon
+            - Sat
+
+        arrival_time:
+          type: string
+          example: "14:20"
+
+        route_no:
+          type: string
+          example: "PG0001"
+
+        origin:
+          $ref: '#/components/schemas/Airport'
+
+      required:
+        - days_of_week
+        - arrival_time
+        - route_no
+        - origin
+
+
+    OutboundScheduleItem:
+      type: object
+      properties:
+        days_of_week:
+          type: array
+          items:
+            $ref: '#/components/schemas/Day'
+          example:
+            - Mon
+            - Sat
+
+        departure_time:
+          type: string
+          example: "10:15"
+
+        route_no:
+          type: string
+          example: "SU123"
+
+        destination:
+          $ref: '#/components/schemas/Airport'
+
+      required:
+        - days_of_week
+        - departure_time
+        - route_no
+        - destination
+
+
+    RouteFlight:
+      type: object
+      properties:
+        route_no:
+          type: string
+          example: "PG0001"
+
+        from:
+          type: string
+          example: "OVB"
+
+        to:
+          type: string
+          example: "SVO"
+
+        departure:
+          type: string
+          format: date-time
+          example: "2026-05-12T10:00:00"
+
+        arrival:
+          type: string
+          format: date-time
+          example: "2026-05-12T14:20:00"
+
+      required:
+        - route_no
+        - from
+        - to
+        - departure
+        - arrival
+
+
+    RouteResult:
+      type: object
+      properties:
+        total_duration:
+          type: string
+          example: "5h 20m"
+
+        connections:
+          type: integer
+          example: 1
+
+        price:
+          type: number
+          format: double
+          example: 15000
+
+        flights:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouteFlight'
+      required:
+        - total_duration
+        - connections
+        - price
+        - flights
+
+    BookingsRequestBody:
+      type: object
+      properties:
+        passenger_id:
+          type: string
+          example: "PSID213"
+        passenger_name:
+          type: string
+          example: "Klim Jukov"
+        flight_ids:
+          type: array
+          items:
+            type: number
+          example:
+            - 1134
+            - 1132
+        fare_conditions:  
+          $ref: '#/components/schemas/FareConditions'
+      required:
+        - passenger_id
+        - passenger_name
+        - flight_ids
+        - fare_conditions
+
+    BookingsResponse:
+      type: object
+      properties:
+        book_ref:
+          type: string
+          example: "BKRF12"
+        ticket_no:
+          type: string
+          example: "001230102030"
+        total_amount:
+          type: number
+          example: 15000
+      required:
+        - book_ref
+        - ticket_no
+        - total_amount
+    
+    CheckInRequest:
+      type: object
+      properties:
+        ticket_no:
+          type: string
+          example: "0005433348362"
+    
+        seats:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeatSelection'
+    
+    CheckInResponse:
+      type: object
+      properties:
+        boarding_passes:
+          type: array
+          items:
+            $ref: '#/components/schemas/BoardingPass'
+    
+    SeatSelection:
+      type: object
+      properties:
+        flight_id:
+          type: integer
+          example: 11465
+    
+        seat_no:
+          type: string
+          example: "17B"
+    
+    BoardingPass:
+      type: object
+      properties:
+        flight_id:
+          type: integer
+    
+        seat_no:
+          type: string
+    
+        boarding_no:
+          type: integer
+        
+        boarding_time:
+          type: string
+          format: date-time
