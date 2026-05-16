@@ -5,12 +5,11 @@ info:
   version: 1.0.0
 
 paths:
-
   /cities:
     get:
       summary: List all available cities for flights
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -21,14 +20,6 @@ paths:
               example:
                 - "Novosibirsk"
                 - "Moscow"
-
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
 
   /cities/{city}/airports:
     get:
@@ -43,51 +34,35 @@ paths:
           example: "Novosibirsk"
 
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Airport'
+                  $ref: "#/components/schemas/Airport"
 
-        '404':
+        "404":
           description: City not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
+                $ref: "#/components/schemas/ErrorResponse"
 
   /airports:
     get:
       summary: List all available source and destination airports
 
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Airport'
-
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
+                  $ref: "#/components/schemas/Airport"
 
   /airports/{airport_code}/inbound:
     get:
@@ -102,29 +77,21 @@ paths:
           example: "OVB"
 
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/InboundScheduleItem'
+                  $ref: "#/components/schemas/InboundScheduleItem"
 
-        '404':
+        "404":
           description: Airport code not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
+                $ref: "#/components/schemas/ErrorResponse"
 
   /airports/{airportCode}/outbound:
     get:
@@ -139,29 +106,21 @@ paths:
           example: "OVB"
 
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OutboundScheduleItem'
+                  $ref: "#/components/schemas/OutboundScheduleItem"
 
-        '404':
+        "404":
           description: Airport code not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
+                $ref: "#/components/schemas/ErrorResponse"
 
   /routes:
     get:
@@ -198,7 +157,7 @@ paths:
           required: true
           description: Booking class
           schema:
-            $ref: '#/components/schemas/FareConditions'
+            $ref: "#/components/schemas/FareConditions"
 
         - name: maxConnections
           in: query
@@ -215,28 +174,22 @@ paths:
           example: 1
 
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/RouteResult'
+                  $ref: "#/components/schemas/RouteResult"
 
-        '400':
+        "400":
           description: Invalid query parameters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   /bookings:
     post:
       summary: Create a booking for a selected route for a single passenger
@@ -244,69 +197,56 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BookingsRequestBody'
+              $ref: "#/components/schemas/BookingsRequestBody"
         required: true
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BookingsResponse'
+                $ref: "#/components/schemas/BookingsResponse"
 
-        '400':
+        "400":
           description: Invalid request body
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              
   /check-in:
     post:
       summary: Online check-in for a flight
-  
+
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CheckInRequest'
-  
+              $ref: "#/components/schemas/CheckInRequest"
+
       responses:
-        '200':
+        "200":
           description: Successful check-in
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CheckInResponse'
-  
-        '400':
+                $ref: "#/components/schemas/CheckInResponse"
+
+        "400":
           description: Invalid request
-  
-        '500':
-          description: Internal server error
 
 components:
-
   schemas:
-
     ErrorResponse:
       type: object
       properties:
         error:
           type: string
-          example: "Internal server error"
+          example: "Error"
 
       required:
         - error
-
 
     Airport:
       type: object
@@ -328,7 +268,6 @@ components:
         - airport_name
         - city
 
-
     Day:
       type: string
       enum:
@@ -339,7 +278,7 @@ components:
         - Fri
         - Sat
         - Sun
-  
+
     FareConditions:
       type: string
       enum:
@@ -353,7 +292,7 @@ components:
         days_of_week:
           type: array
           items:
-            $ref: '#/components/schemas/Day'
+            $ref: "#/components/schemas/Day"
           example:
             - Mon
             - Sat
@@ -367,7 +306,7 @@ components:
           example: "PG0001"
 
         origin:
-          $ref: '#/components/schemas/Airport'
+          $ref: "#/components/schemas/Airport"
 
       required:
         - days_of_week
@@ -375,14 +314,13 @@ components:
         - route_no
         - origin
 
-
     OutboundScheduleItem:
       type: object
       properties:
         days_of_week:
           type: array
           items:
-            $ref: '#/components/schemas/Day'
+            $ref: "#/components/schemas/Day"
           example:
             - Mon
             - Sat
@@ -396,14 +334,13 @@ components:
           example: "SU123"
 
         destination:
-          $ref: '#/components/schemas/Airport'
+          $ref: "#/components/schemas/Airport"
 
       required:
         - days_of_week
         - departure_time
         - route_no
         - destination
-
 
     RouteFlight:
       type: object
@@ -437,7 +374,6 @@ components:
         - departure
         - arrival
 
-
     RouteResult:
       type: object
       properties:
@@ -457,7 +393,7 @@ components:
         flights:
           type: array
           items:
-            $ref: '#/components/schemas/RouteFlight'
+            $ref: "#/components/schemas/RouteFlight"
       required:
         - total_duration
         - connections
@@ -480,8 +416,8 @@ components:
           example:
             - 1134
             - 1132
-        fare_conditions:  
-          $ref: '#/components/schemas/FareConditions'
+        fare_conditions:
+          $ref: "#/components/schemas/FareConditions"
       required:
         - passenger_id
         - passenger_name
@@ -504,50 +440,50 @@ components:
         - book_ref
         - ticket_no
         - total_amount
-    
+
     CheckInRequest:
       type: object
       properties:
         ticket_no:
           type: string
           example: "0005433348362"
-    
+
         seats:
           type: array
           items:
-            $ref: '#/components/schemas/SeatSelection'
-    
+            $ref: "#/components/schemas/SeatSelection"
+
     CheckInResponse:
       type: object
       properties:
         boarding_passes:
           type: array
           items:
-            $ref: '#/components/schemas/BoardingPass'
-    
+            $ref: "#/components/schemas/BoardingPass"
+
     SeatSelection:
       type: object
       properties:
         flight_id:
           type: integer
           example: 11465
-    
+
         seat_no:
           type: string
           example: "17B"
-    
+
     BoardingPass:
       type: object
       properties:
         flight_id:
           type: integer
-    
+
         seat_no:
           type: string
-    
+
         boarding_no:
           type: integer
-        
+
         boarding_time:
           type: string
           format: date-time

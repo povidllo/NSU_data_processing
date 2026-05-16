@@ -21,4 +21,4 @@ FROM routes r
   AND pr.fare_conditions = s.fare_conditions
 WHERE f.status IN ('Arrived', 'Departed')
 ORDER BY r.route_no, s.fare_conditions, r.duration 
-LIMIT 10;
+LIMIT 100;
